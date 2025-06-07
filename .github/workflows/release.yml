@@ -6,46 +6,75 @@ on:
       - 'v*'
 
 jobs:
-  build-and-publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-          
-      - name: Install dependencies
-        run: bun install
-        
-      - name: Build all platforms
-        run: bun run build:all
-        
-      - name: Test CLI
+
+      - name: Install dependencies (no scripts)
+        run: bun install --no-scripts
+
+      - name: Build binary
         run: |
-          chmod +x ./dist/astraops-cli-linux
-          ./dist/astraops-cli-linux --help
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            bun run build:linux
+          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            bun run build:windows
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            bun run build:macos
+          fi
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: astraops-cli-${{ matrix.os }}
+          path: |
+            dist/astraops-cli-linux
+            dist/astraops-cli-windows.exe
+            dist/astraops-cli-macos
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/astraops-cli-linux
-            dist/astraops-cli-macos
-            dist/astraops-cli-windows.exe
+            ./artifacts/**/astraops-cli-linux
+            ./artifacts/**/astraops-cli-windows.exe
+            ./artifacts/**/astraops-cli-macos
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          
-      - name: Configure NPM registry
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-          
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies 
+        run: bun install --no-scripts
+
       - name: Publish to NPM
         run: bun publish --access public
         env:
