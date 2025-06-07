@@ -1,0 +1,57 @@
+{
+  "name": "astraops-cli",
+  "version": "0.0.1",
+  "description": "AstraOps CLI for AWS EKS setup and configuration",
+  "main": "index.ts",
+  "type": "module",
+  "bin": {
+    "astraops-cli": "./dist/astraops-cli"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun build --compile --minify --sourcemap --outfile dist/astraops-cli ./index.ts",
+    "build:install": "bun run build && bun run install:local",
+    "build:all": "bun run build:linux && bun run build:windows && bun run build:macos",
+    "build:linux": "bun build --compile --target=bun-linux-x64 --minify --outfile dist/astraops-cli-linux ./index.ts",
+    "build:windows": "bun build --compile --target=bun-windows-x64 --minify --outfile dist/astraops-cli-windows.exe ./index.ts",
+    "build:macos": "bun build --compile --target=bun-darwin-x64 --minify --outfile dist/astraops-cli-macos ./index.ts",
+    "install:local": "bash scripts/install-local.sh",
+    "uninstall:local": "sudo rm -f /usr/local/bin/astraops-cli && echo 'astraops-cli uninstalled successfully!'",
+    "prepublishOnly": "bun run build",
+    "publish": "bun publish",
+    "publish:dry": "bun publish --dry-run",
+    "dev": "bun run --hot-reload --watch ./index.ts"
+  },
+  "keywords": [
+    "aws",
+    "eks",
+    "iam",
+    "cli",
+    "astraops",
+    "kubernetes",
+    "infrastructure"
+  ],
+  "author": "Jorge Florentino",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AstraOpsOrg/AstraCLI.git"
+  },
+  "homepage": "https://github.com/AstraOpsOrg/AstraCLI#readme",
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-iam": "^3.696.0",
+    "@aws-sdk/client-sts": "^3.696.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
