@@ -1,5 +1,5 @@
 {
-  "name": "astraops-cli",
+  "name": "@astraops/astraops-cli",
   "version": "0.0.1",
   "description": "AstraOps CLI for AWS EKS setup and configuration",
   "main": "index.ts",
