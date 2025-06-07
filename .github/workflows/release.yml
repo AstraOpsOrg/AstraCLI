@@ -18,8 +18,10 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies 
-        run: SKIP_ASTRAOPS_CLI_POSTINSTALL=1 bun install 
+      - name: Install dependencies
+        run: bun install
+        env:
+          SKIP_ASTRAOPS_CLI_POSTINSTALL: 1
 
       - name: Build binary
         run: |
@@ -72,8 +74,10 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies 
-        run: SKIP_ASTRAOPS_CLI_POSTINSTALL=1 bun install
+      - name: Install dependencies
+        run: bun install
+        env:
+          SKIP_ASTRAOPS_CLI_POSTINSTALL: 1
 
       - name: Publish to NPM
         run: bun publish --access public
