@@ -28,6 +28,16 @@ jobs:
         run: |
           chmod +x ./dist/astraops-cli-linux
           ./dist/astraops-cli-linux --help
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/astraops-cli-linux
+            dist/astraops-cli-macos
+            dist/astraops-cli-windows.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           
       - name: Configure NPM registry
         run: |
@@ -39,12 +49,4 @@ jobs:
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
           
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/astraops-cli-linux
-            dist/astraops-cli-macos
-            dist/astraops-cli-windows.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      
