@@ -1,14 +1,15 @@
 {
   "name": "@astraops/astraops-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "AstraOps CLI for AWS EKS setup and configuration",
   "main": "index.ts",
   "type": "module",
   "bin": {
-    "astraops-cli": "./bin/astraops-cli"
+    "astraops-cli": "scripts/cli.js"
   },
   "files": [
-    "postinstall.ts",
+    "scripts/cli.js",
+    "scripts/postinstall.js",
     "README.md",
     "LICENSE"
   ],
@@ -21,7 +22,7 @@
     "build:linux": "bun build --compile --target=bun-linux-x64 --minify --outfile dist/astraops-cli-linux ./index.ts",
     "build:windows": "bun build --compile --target=bun-windows-x64 --minify --outfile dist/astraops-cli-windows.exe ./index.ts",
     "build:macos": "bun build --compile --target=bun-darwin-x64 --minify --outfile dist/astraops-cli-macos ./index.ts",
-    "postinstall": "bun run postinstall.ts"
+    "postinstall": "node scripts/postinstall.js"
   },
   "keywords": [
     "aws",
