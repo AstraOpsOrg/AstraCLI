@@ -1,4 +1,4 @@
-name: Build, Test, and Release AstraOps CLI
+name: Build and release AstraOps CLI
 
 on:
   push:
