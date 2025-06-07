@@ -5,10 +5,10 @@
   "main": "index.ts",
   "type": "module",
   "bin": {
-    "astraops-cli": "./dist/astraops-cli"
+    "astraops-cli": "./bin/astraops-cli"
   },
   "files": [
-    "dist/",
+    "postinstall.ts",
     "README.md",
     "LICENSE"
   ],
@@ -21,7 +21,8 @@
     "build:linux": "bun build --compile --target=bun-linux-x64 --minify --outfile dist/astraops-cli-linux ./index.ts",
     "build:windows": "bun build --compile --target=bun-windows-x64 --minify --outfile dist/astraops-cli-windows.exe ./index.ts",
     "build:macos": "bun build --compile --target=bun-darwin-x64 --minify --outfile dist/astraops-cli-macos ./index.ts",
-    "publish": "bun publish"
+    "publish": "bun publish --access public",
+    "postinstall": "bun run postinstall.ts"
   },
   "keywords": [
     "aws",
