@@ -15,6 +15,11 @@ const repo = new URL(repoUrl).pathname.substring(1);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+if (process.env.SKIP_ASTRAOPS_CLI_POSTINSTALL) {
+  console.log('Skipping AstraOps CLI postinstall (build pipeline detected).');
+  process.exit(0);
+}
+
 function getAssetName() {
   const platform = os.platform();
   switch (platform) {
