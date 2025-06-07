@@ -1,6 +1,6 @@
 {
   "name": "@astraops/astraops-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "AstraOps CLI for AWS EKS setup and configuration",
   "main": "index.ts",
   "type": "module",
@@ -16,12 +16,11 @@
     "build:local": "bun build --compile --minify --sourcemap --outfile dist/astraops-cli ./index.ts",
     "build:install": "bun run build:local && bun run install:local",
     "install:local": "bash scripts/install-local.sh",
-    "uninstall:local": "sudo rm -f /usr/local/bin/astraops-cli && echo 'astraops-cli uninstalled successfully!'",
+    "uninstall:local": "bash scripts/uninstall-local.sh",
     "build:all": "bun run build:linux && bun run build:windows && bun run build:macos",
     "build:linux": "bun build --compile --target=bun-linux-x64 --minify --outfile dist/astraops-cli-linux ./index.ts",
     "build:windows": "bun build --compile --target=bun-windows-x64 --minify --outfile dist/astraops-cli-windows.exe ./index.ts",
     "build:macos": "bun build --compile --target=bun-darwin-x64 --minify --outfile dist/astraops-cli-macos ./index.ts",
-    "publish": "bun publish --access public",
     "postinstall": "bun run postinstall.ts"
   },
   "keywords": [

@@ -4,7 +4,7 @@ import { get } from "https";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-const version = "v0.0.2"; 
+const version = "v0.0.3"; 
 const repo = "AstraOpsOrg/AstraCLI";
 
 const __filename = fileURLToPath(import.meta.url);
