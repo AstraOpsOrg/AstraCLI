@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Dev as Tú (dev)
+    participant GH as GitHub Actions
+    participant GHRel as Release GitHub
+    participant NPM as npm registry
+    participant User as Usuario final
+
+    Dev->>GH: Push tag v1.0.0
+    GH->>GH: Build en Ubuntu, Windows, Mac
+    GH->>GHRel: Sube binarios a la release
+    GH->>NPM: Publica paquete npm (sin binarios)
+    User->>NPM: npm install -g @astraops/astraops-cli
+    NPM->>User: Descarga paquete (scripts)
+    User->>GHRel: postinstall.js descarga binario correcto
+    User->>User: Usa astraops-cli nativo 
