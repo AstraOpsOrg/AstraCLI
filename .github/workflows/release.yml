@@ -1,9 +1,12 @@
-name: Build, Test, and Release AstraOps CLI
+name: Build and release AstraOps CLI
 
 on:
   push:
     tags:
       - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -18,18 +21,22 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies 
-        run: SKIP_ASTRAOPS_CLI_POSTINSTALL=1 bun install 
+      - name: Install dependencies
+        run: bun install
+        env:
+          SKIP_ASTRAOPS_CLI_POSTINSTALL: 1
 
-      - name: Build binary
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            bun run build:linux
-          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            bun run build:windows
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            bun run build:macos
-          fi
+      - name: Build Linux binary
+        if: matrix.os == 'ubuntu-latest'
+        run: bun run build:linux
+
+      - name: Build Windows binary
+        if: matrix.os == 'windows-latest'
+        run: bun run build:windows
+
+      - name: Build MacOS binary
+        if: matrix.os == 'macos-latest'
+        run: bun run build:macos
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
@@ -72,8 +79,10 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies 
-        run: SKIP_ASTRAOPS_CLI_POSTINSTALL=1 bun install
+      - name: Install dependencies
+        run: bun install
+        env:
+          SKIP_ASTRAOPS_CLI_POSTINSTALL: 1
 
       - name: Publish to NPM
         run: bun publish --access public
