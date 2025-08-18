@@ -1,6 +1,6 @@
 {
   "name": "@astraops/astraops-cli",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "AstraOps CLI for AWS EKS setup and configuration",
   "main": "index.ts",
   "type": "module",
@@ -14,10 +14,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build:local": "bun build --compile --minify --sourcemap --outfile dist/astraops-cli ./index.ts",
-    "build:install": "bun run build:local && bun run install:local",
-    "install:local": "bash scripts/install-local.sh",
-    "uninstall:local": "bash scripts/uninstall-local.sh",
+    "build:local": "bun build --compile --target=bun-windows-x64 --minify --sourcemap --outfile dist/astraops-cli-windows.exe ./index.ts",
     "build:all": "bun run build:linux && bun run build:windows && bun run build:macos",
     "build:linux": "bun build --compile --target=bun-linux-x64 --minify --outfile dist/astraops-cli-linux ./index.ts",
     "build:windows": "bun build --compile --target=bun-windows-x64 --minify --outfile dist/astraops-cli-windows.exe ./index.ts",
@@ -47,7 +44,8 @@
   "dependencies": {
     "@aws-sdk/client-iam": "^3.696.0",
     "@aws-sdk/client-sts": "^3.696.0",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "yaml": "^2.4.5"
   },
   "devDependencies": {
     "@types/bun": "latest"
