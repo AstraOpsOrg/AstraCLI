@@ -18,6 +18,7 @@ export function registerDeployCommand(program: Command) {
 
       console.log(theme.white(`📄 ${theme.bg.green('Phase 1')}: Reading configuration astraops.yaml file...`));
       const astraopsConfig = await readAstraopsYaml('./astraops.yaml');
+      console.log(theme.greenCustom(`✅ Configuration loaded: ${astraopsConfig.applicationName}`));
       const accountId = requiredEnv('AWS_ACCOUNT_ID');
       const region = requiredEnv('AWS_REGION');
       const accessKeyId = requiredEnv('AWS_ACCESS_KEY_ID');
@@ -51,13 +52,22 @@ export function registerDeployCommand(program: Command) {
 
         // Optional monitoring setup after SUCCESS
         if (opts?.monitoring) {
-          console.log(theme.white(`📄 ${theme.bg.green('Phase 5')}: Checking job status for monitoring setup...`));
-          const { getJobStatus, setupMonitoring } = await import('@/src/services/backend.ts');
+          const { getJobStatus, setupMonitoring, streamMonitoringLogs } = await import('@/src/services/backend.ts');
           const status = await getJobStatus(jobId);
           if (status === 'COMPLETED') {
-              console.log(theme.white(`📄 ${theme.bg.green('Phase 6')}: Setting up monitoring (Grafana)...`));
-            const { url } = await setupMonitoring(jobId);
+            console.log(theme.white(`📄 ${theme.bg.green('Phase 5')}: Setting up monitoring (Grafana)...`));
+            let stopStreaming: null | (() => Promise<void>) = null;
+            try {
+              stopStreaming = await streamMonitoringLogs(jobId);
+            } catch (e) {
+              console.log(theme.gray(`(monitoring logs not available: ${String((e as any)?.message || e)})`));
+            }
+            const { url, username, password } = await setupMonitoring(jobId);
+            try { if (stopStreaming) await stopStreaming(); } catch {}
             console.log(theme.greenCustom(`✅ Monitoring ready: ${url}`));
+            if (username && password) {
+              console.log(theme.yellowCustom(`🔑 Grafana credentials (experimental): ${username}/${password}`));
+            }
           } else {
             console.log(theme.yellowCustom('⚠️ Skipping monitoring setup (job not successful).'));
           }

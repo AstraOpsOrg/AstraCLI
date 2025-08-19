@@ -45,11 +45,22 @@ export function registerDestroyCommand(program: Command) {
         const { jobId } = await postDestroyRequest(body)
         console.log(`${theme.greenCustom('✅ Destroy initiated.')} JobId: ${jobId}`)
         console.log(`${theme.gray('📄 Phase 3: Streaming destroy logs...')}`)
+        
+        let stopDestroyStreaming: null | (() => Promise<void>) = null;
+        try {
+          const { streamDestroyLogs } = await import('@/src/services/backend.ts');
+          stopDestroyStreaming = await streamDestroyLogs(jobId);
+        } catch (e) {
+          console.log(theme.gray(`(destroy logs not available: ${String((e as any)?.message || e)})`));
+        }
+        
         try {
           await streamLogs(jobId, { type: 'destroy' })
         } catch (err) {
           console.error(theme.red(`Destroy failed: ${String((err as any)?.message || err)}`))
           process.exit(1)
+        } finally {
+          try { if (stopDestroyStreaming) await stopDestroyStreaming(); } catch {}
         }
       } catch (e: any) {
         console.error(`${theme.red('Error:')} ${e?.message || e}`)
