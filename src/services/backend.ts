@@ -211,7 +211,8 @@ function handleSSEChunk(chunk: string, breakOnError = false, appName?: string): 
             }
           } catch {}
         }
-        return false;
+          return false;
+        }
       }
       
       if (typeof message === 'string' && /S3 bucket.*removed successfully/i.test(message)) {
