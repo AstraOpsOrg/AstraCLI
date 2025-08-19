@@ -179,30 +179,29 @@ function handleSSEChunk(chunk: string, breakOnError = false, appName?: string): 
   const lines = chunk.split('\n');
   let event: string | undefined;
   let data = '';
-  for (const line of lines) {
-    if (line.startsWith('event:')) event = line.slice(6).trim();
-    else if (line.startsWith('data:')) data += line.slice(5).trim();
+  for (const l of lines) {
+    if (l.startsWith('event:')) event = l.slice(6).trim();
+    else if (l.startsWith('data:')) data += l.slice(5).trim();
   }
   if (!data) return false;
+
   if (event === 'log') {
     try {
       const parsed = JSON.parse(data);
-      const phase = parsed.phase || 'unknown';
-      const level = parsed.level || 'info';
-      const message = parsed.message || '';
+      const phase: string = parsed.phase || 'unknown';
+      const level: string = parsed.level || 'info';
+      const message: string = parsed.message || '';
       const ts = parsed.timestamp ? `[${parsed.timestamp}] ` : '';
-      const line = `${ts}[${phase}] ${message}`;
-      
-      // Capture Frontend URL and publish to github summary output
+      const outLine = `${ts}[${phase}] ${message}`;
+
+      // Frontend URL pretty print + GH summary
       if (typeof message === 'string' && /Frontend public URL:\s*http/i.test(message)) {
         const match = message.match(/Frontend public URL:\s*(https?:\/\/\S+)/i);
         const url = match?.[1] || '';
         if (url) {
-          import('@/src/utils/theme.ts').then(({ default: theme }) => {
-            console.log(theme.greenCustom(`✅ Frontend ready: ${url}`));
-          }).catch(() => {
-            console.log(`✅ Frontend ready: ${url}`);
-          });
+          import('@/src/utils/theme.ts')
+            .then(({ default: theme }) => console.log(theme.greenCustom(`✅ Frontend ready: ${url}`)))
+            .catch(() => console.log(`✅ Frontend ready: ${url}`));
           try {
             const ghaSummary = Bun.env.GITHUB_STEP_SUMMARY;
             if (ghaSummary) {
@@ -211,23 +210,21 @@ function handleSSEChunk(chunk: string, breakOnError = false, appName?: string): 
             }
           } catch {}
         }
-          return false;
-        }
-      }
-      
-      if (typeof message === 'string' && /S3 bucket.*removed successfully/i.test(message)) {
-        import('@/src/utils/theme.ts').then(({ default: theme }) => {
-          console.log(theme.greenCustom(`✅ Destroy completed successfully`));
-        }).catch(() => {
-          console.log(`✅ Destroy completed successfully`);
-        });
         return false;
       }
-      
-      if (level === 'success') console.log(line);
-      else if (level === 'error' || level === 'failed') console.error(line);
-      else console.log(line);
-      
+
+      // Destroy success pretty print
+      if (typeof message === 'string' && /S3 bucket.*removed successfully/i.test(message)) {
+        import('@/src/utils/theme.ts')
+          .then(({ default: theme }) => console.log(theme.greenCustom('✅ Destroy completed successfully')))
+          .catch(() => console.log('✅ Destroy completed successfully'));
+        return false;
+      }
+
+      if (level === 'success') console.log(outLine);
+      else if (level === 'error' || level === 'failed') console.error(outLine);
+      else console.log(outLine);
+
       if (breakOnError && (level === 'error' || level === 'failed')) {
         return true;
       }
