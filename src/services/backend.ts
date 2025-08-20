@@ -69,9 +69,9 @@ export async function streamLogs(
   }
 
   await iterateSSE(res.body, (chunk) => {
-    const encounteredError = handleSSEChunk(chunk, type === 'destroy', opts?.appName);
-    if (encounteredError && type === 'destroy') {
-      throw new Error('Destroy failed');
+    const encounteredError = handleSSEChunk(chunk, true, opts?.appName);
+    if (encounteredError) {
+      throw new Error(type === 'destroy' ? 'Destroy failed' : 'Deploy failed');
     }
   });
 }
