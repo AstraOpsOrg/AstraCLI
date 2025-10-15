@@ -15,12 +15,12 @@ ${theme.greenCustom(' / ___ \\ ___) || | |  _ <  / ___ \\ |_| |  __/ ___) |')}
 ${theme.greenCustom('/_/   \\_\\____/ |_| |_| \\_\\/_/   \\_\\___/|_|   |____/ ')}
 
 ${theme.yellowCustom('     ☁️ Your bridge between code and cloud ☁️')}
-${theme.blueCustom('                AstraOps')} ${theme.gray('CLI v1.1.1')}
+${theme.blueCustom('                AstraOps')} ${theme.gray('CLI v1.1.2')}
 `;
 
 program
   .name('astraops-cli')
-  .version('astraops-cli v1.1.1', '-v, --version', 'Display version information')
+  .version('astraops-cli v1.1.2', '-v, --version', 'Display version information')
   .addHelpText('beforeAll', banner)
   .helpCommand(false)
   .addHelpText('after', `
